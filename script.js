@@ -2,6 +2,7 @@
 let clickCount = 0;
 const maxClicks = 3;
 let interactionCount = 0;
+let isTypingComplete = false; // Flag untuk mengecek apakah typing selesai
 const hints = [
     "Klik tombolnya dong! 😊",
     "Hehe, coba lagi! 😄",
@@ -16,7 +17,7 @@ function updateInteractionCounter() {
     if (counterElement) {
         counterElement.textContent = interactionCount;
     }
-    
+
     // Add celebration effect every 5 interactions
     if (interactionCount % 5 === 0) {
         const counterContainer = document.getElementById('interactionCounter');
@@ -46,9 +47,9 @@ function showFloatingMessage(message) {
     floatingMsg.style.fontSize = '0.9em';
     floatingMsg.style.zIndex = '1000';
     floatingMsg.style.animation = 'float-in 0.5s ease-out, float-out 0.5s ease-out 2.5s forwards';
-    
+
     document.body.appendChild(floatingMsg);
-    
+
     setTimeout(() => {
         if (floatingMsg.parentNode) {
             floatingMsg.parentNode.removeChild(floatingMsg);
@@ -62,9 +63,9 @@ function createSoundWave(x, y) {
     wave.className = 'sound-wave';
     wave.style.left = (x - 10) + 'px';
     wave.style.top = (y - 10) + 'px';
-    
+
     document.body.appendChild(wave);
-    
+
     setTimeout(() => {
         if (wave.parentNode) {
             wave.parentNode.removeChild(wave);
@@ -73,11 +74,11 @@ function createSoundWave(x, y) {
 }
 
 // Typing effect for text
-function typeText(element, text, speed = 50) {
+function typeText(element, text, speed = 50, callback = null) {
     element.textContent = '';
     element.classList.add('typing-text');
     let i = 0;
-    
+
     const typeInterval = setInterval(() => {
         if (i < text.length) {
             element.textContent += text.charAt(i);
@@ -85,6 +86,8 @@ function typeText(element, text, speed = 50) {
         } else {
             clearInterval(typeInterval);
             element.classList.remove('typing-text');
+            // Panggil callback jika ada (untuk menandai typing selesai)
+            if (callback) callback();
         }
     }, speed);
 }
@@ -93,7 +96,7 @@ function typeText(element, text, speed = 50) {
 function createFloatingHearts() {
     const heartsContainer = document.getElementById('floatingHearts');
     if (!heartsContainer) return;
-    
+
     const heartEmojis = ['💕', '💖', '💗', '🌸'];
 
     const heartInterval = setInterval(() => {
@@ -125,7 +128,7 @@ function createFloatingHearts() {
 function createConfetti() {
     const confettiContainer = document.getElementById('confetti');
     if (!confettiContainer) return;
-    
+
     const colors = ['#ff6b9d', '#ffd93d', '#6bcf7f', '#4d9de0', '#e15554', '#f9844a'];
 
     for (let i = 0; i < 50; i++) {
@@ -169,25 +172,60 @@ function createSparkle(x, y) {
 // Update hint text
 function updateHint() {
     const hintText = document.getElementById('hintText');
-    if (!hintText) return;
+    const openButton = document.getElementById('openButton');
     
-    // Use typing effect for hint
-    typeText(hintText, hints[clickCount], 80);
+    if (!hintText) return;
+
+    // Disable button saat typing dimulai
+    isTypingComplete = false;
+    if (openButton) {
+        openButton.disabled = true;
+        openButton.style.opacity = '0.5';
+        openButton.style.cursor = 'not-allowed';
+        openButton.style.pointerEvents = 'none';
+    }
+
+    // Use typing effect for hint dengan callback
+    typeText(hintText, hints[clickCount], 80, () => {
+        // Callback dipanggil saat typing selesai
+        isTypingComplete = true;
+        if (openButton) {
+            openButton.disabled = false;
+            openButton.style.opacity = '1';
+            openButton.style.cursor = 'pointer';
+            openButton.style.pointerEvents = 'auto';
+            
+            // Tambahkan efek glow untuk menandakan tombol sudah bisa diklik
+            openButton.classList.add('ready-glow');
+            setTimeout(() => {
+                openButton.classList.remove('ready-glow');
+            }, 1000);
+        }
+    });
 
     if (clickCount < maxClicks - 1) {
-        // Add shake effect to button
-        const openButton = document.getElementById('openButton');
-        if (openButton) {
-            openButton.classList.add('shake');
-            setTimeout(() => {
-                openButton.classList.remove('shake');
-            }, 500);
-        }
+        // Add shake effect to button setelah typing selesai
+        setTimeout(() => {
+            if (openButton && isTypingComplete) {
+                openButton.classList.add('shake');
+                setTimeout(() => {
+                    openButton.classList.remove('shake');
+                }, 500);
+            }
+        }, hints[clickCount].length * 80 + 200); // Delay berdasarkan panjang teks
     }
 }
 
 // Handle button click
 function handleButtonClick(event) {
+    // Cek apakah typing sudah selesai
+    if (!isTypingComplete && clickCount > 0) {
+        // Jika typing belum selesai, tampilkan pesan dan return
+        showFloatingMessage("Tunggu dulu, masih ngetik nih! ⏳");
+        createSparkle(event.clientX, event.clientY);
+        return;
+    }
+
     clickCount++;
     updateInteractionCounter();
 
@@ -212,15 +250,6 @@ function handleButtonClick(event) {
             }, 600);
         }
 
-        // Add glow effect to button
-        const openButton = document.getElementById('openButton');
-        if (openButton) {
-            openButton.classList.add('glow');
-            setTimeout(() => {
-                openButton.classList.remove('glow');
-            }, 2000);
-        }
-
         // Show encouraging messages
         const encouragingMessages = [
             "Ayo lagi! 😄",
@@ -237,7 +266,7 @@ function handleButtonClick(event) {
 function openEnvelope() {
     const envelopeContainer = document.getElementById('envelopeContainer');
     const birthdayCard = document.getElementById('birthdayCard');
-    
+
     if (!envelopeContainer || !birthdayCard) return;
 
     // Update hint terakhir
@@ -264,7 +293,7 @@ function openEnvelope() {
         setTimeout(() => {
             const mainTitle = document.querySelector('.main-title');
             if (mainTitle) {
-                typeText(mainTitle, 'SELAMAT ULANG TAHUN!', 100);
+                typeText(mainTitle, 'SELAMAT ULANG TAHUN SOPI!', 100);
             }
         }, 800);
 
@@ -279,11 +308,11 @@ function openEnvelope() {
 // Add interactive effects to wish items
 function addWishItemEffects() {
     const wishItems = document.querySelectorAll('.wish-story, .wish-interactive, .wish-memory, .wish-animated, .wish-garden, .wish-treasure, .wish-timemachine, .wish-energy');
-    
+
     wishItems.forEach((item, index) => {
         item.addEventListener('click', function (e) {
             updateInteractionCounter();
-            
+
             // Create sparkle and sound wave effect
             const rect = this.getBoundingClientRect();
             createSparkle(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -292,7 +321,7 @@ function addWishItemEffects() {
             // Add temporary glow effect
             this.style.boxShadow = '0 0 20px rgba(255, 107, 157, 0.6)';
             this.classList.add('celebration-mode');
-            
+
             setTimeout(() => {
                 this.style.boxShadow = '';
                 this.classList.remove('celebration-mode');
@@ -330,10 +359,10 @@ function addWishItemEffects() {
 function startMemorableAnimations() {
     // Animate day cycle
     animateDayCycle();
-    
+
     // Animate strength bars
     animateStrengthBars();
-    
+
     // Start time machine effect
     startTimeMachine();
 }
@@ -342,9 +371,9 @@ function startMemorableAnimations() {
 function animateDayCycle() {
     const dayItems = document.querySelectorAll('.day-item');
     if (dayItems.length === 0) return;
-    
+
     let currentDay = 0;
-    
+
     setInterval(() => {
         dayItems.forEach(item => item.classList.remove('active'));
         dayItems[currentDay].classList.add('active');
@@ -357,19 +386,19 @@ function animateStrengthBars() {
     const strengthFill = document.querySelector('.strength-fill');
     const wisdomFill = document.querySelector('.wisdom-fill');
     const spiritFill = document.querySelector('.spirit-fill');
-    
+
     if (strengthFill) {
         setTimeout(() => {
             strengthFill.style.width = '95%';
         }, 500);
     }
-    
+
     if (wisdomFill) {
         setTimeout(() => {
             wisdomFill.style.width = '88%';
         }, 1000);
     }
-    
+
     if (spiritFill) {
         setTimeout(() => {
             spiritFill.style.width = '100%';
@@ -380,18 +409,18 @@ function animateStrengthBars() {
 // Start time machine effect
 function startTimeMachine() {
     const timeButtons = document.querySelectorAll('.time-btn');
-    
+
     timeButtons.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             timeButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             const yearDisplay = document.querySelector('.year-number');
             if (yearDisplay) {
                 const years = ['2023', '2024', '2025'];
                 yearDisplay.textContent = years[index] || '2024';
             }
-            
+
             createSparkle(btn.getBoundingClientRect().left + 25, btn.getBoundingClientRect().top + 25);
             showFloatingMessage(`Tahun ${years[index] || '2024'} dipilih! ⏰`);
         });
@@ -402,7 +431,7 @@ function startTimeMachine() {
 function setupEnvelopeEffects() {
     const envelopeContainer = document.getElementById('envelopeContainer');
     if (!envelopeContainer) return;
-    
+
     envelopeContainer.addEventListener('mouseenter', function () {
         if (!this.classList.contains('opening')) {
             this.style.transform = 'scale(1.02) rotate(1deg)';
@@ -439,7 +468,7 @@ function setupCursorEffects() {
 // Easter egg: Double click anywhere for surprise
 function setupEasterEgg() {
     let clickTimeout;
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (clickTimeout) {
             clearTimeout(clickTimeout);
             clickTimeout = null;
@@ -493,7 +522,7 @@ function createInteractionCounter() {
     counterDiv.style.color = '#ff6b9d';
     counterDiv.style.zIndex = '1000';
     counterDiv.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
-    
+
     counterDiv.innerHTML = '✨ Interaksi: <span id="interactionCount">0</span>';
     document.body.appendChild(counterDiv);
 }
@@ -510,9 +539,9 @@ function createProgressBar() {
     progressBar.style.zIndex = '1000';
     progressBar.style.width = '0%';
     progressBar.style.animation = 'progress-load 3s ease-out forwards';
-    
+
     document.body.appendChild(progressBar);
-    
+
     // Hide progress bar after loading
     setTimeout(() => {
         progressBar.style.opacity = '0';
@@ -530,20 +559,48 @@ window.addEventListener('load', function () {
     setTimeout(() => {
         document.body.style.opacity = '1';
         showFloatingMessage("Selamat datang! 🎉");
-        
+
         // Initialize all components
-        createInteractionCounter();
+        // createInteractionCounter();
         createProgressBar();
         setupEnvelopeEffects();
         setupCursorEffects();
         setupEasterEgg();
-        addAgeNumber();
-        
+        // addAgeNumber();
+
         // Setup button click handler
         const openButton = document.getElementById('openButton');
         if (openButton) {
             openButton.onclick = handleButtonClick;
         }
+
+        // Mulai dengan hint pertama dan disable button
+        setTimeout(() => {
+            const hintText = document.getElementById('hintText');
+            if (hintText && openButton) {
+                // Disable button di awal
+                openButton.disabled = true;
+                openButton.style.opacity = '0.5';
+                openButton.style.cursor = 'not-allowed';
+                openButton.style.pointerEvents = 'none';
+                
+                // Mulai typing hint pertama
+                typeText(hintText, hints[0], 80, () => {
+                    // Setelah typing selesai, enable button
+                    isTypingComplete = true;
+                    openButton.disabled = false;
+                    openButton.style.opacity = '1';
+                    openButton.style.cursor = 'pointer';
+                    openButton.style.pointerEvents = 'auto';
+                    
+                    // Tambahkan efek ready glow
+                    openButton.classList.add('ready-glow');
+                    setTimeout(() => {
+                        openButton.classList.remove('ready-glow');
+                    }, 1000);
+                });
+            }
+        }, 1500); // Delay untuk memberikan waktu loading
     }, 100);
 });
 
@@ -563,6 +620,22 @@ style.textContent = `
     @keyframes float-out {
         0% { transform: translateX(0); opacity: 1; }
         100% { transform: translateX(100px); opacity: 0; }
+    }
+    
+    .ready-glow {
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.8) !important;
+        animation: ready-pulse 1s ease-in-out !important;
+    }
+    
+    @keyframes ready-pulse {
+        0%, 100% { 
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 0 35px rgba(76, 175, 80, 1);
+            transform: scale(1.02);
+        }
     }
 `;
 document.head.appendChild(style);
