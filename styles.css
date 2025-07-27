@@ -19,6 +19,16 @@ body {
     position: relative;
 }
 
+/* Mobile-first approach */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        padding: 20px 10px;
+        align-items: flex-start;
+        padding-top: 50px;
+    }
+}
+
 /* Floating Hearts Animation */
 .floating-hearts {
     position: fixed;
@@ -1384,44 +1394,301 @@ body {
     50% { transform: scale(1.2); }
 }
 
-/* Responsive Design */
+/* Responsive Design - Mobile First */
 @media (max-width: 768px) {
     .envelope-container {
-        width: 320px;
-        height: 220px;
+        width: 85vw;
+        max-width: 320px;
+        height: 280px;
+        position: relative;
+        margin: 20px auto;
+    }
+    
+    .envelope {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .envelope-flap {
+        height: 60px;
+        padding-top: 12px;
+    }
+    
+    .envelope-flap::after {
+        font-size: 1.1em;
+    }
+    
+    .envelope-front {
+        padding: 25px 20px;
+        justify-content: space-evenly;
+        gap: 8px;
+    }
+    
+    .envelope-stamp {
+        top: 70px;
+        right: 12px;
+        width: 35px;
+        height: 28px;
+        font-size: 1em;
+    }
+    
+    .envelope-address {
+        top: 70px;
+        left: 20px;
+        right: 55px;
+        font-size: 0.7em;
+    }
+    
+    .cute-icon {
+        font-size: 1.6em;
+        margin: 5px 0;
+    }
+    
+    .hint-text {
+        font-size: 0.75em;
+        margin: 8px 0;
+        text-align: center;
+        line-height: 1.3;
+        max-width: 200px;
+    }
+    
+    .open-button {
+        padding: 8px 18px;
+        font-size: 0.85em;
+        min-width: 75px;
+        margin-top: 5px;
     }
     
     .birthday-card {
-        padding: 20px;
-        max-width: 95%;
+        padding: 20px 15px;
+        max-width: 95vw;
+        max-height: 85vh;
+        margin: 10px auto;
+        top: 45%;
     }
     
     .main-title {
-        font-size: 2em;
+        font-size: 1.7em;
+        margin-bottom: 20px;
+    }
+    
+    .birthday-icon {
+        font-size: 2.2em;
+        margin-bottom: 12px;
     }
     
     .wish-item {
-        padding: 20px;
-        margin: 15px 0;
+        padding: 18px 15px;
+        margin: 12px 0;
         flex-direction: column;
         text-align: center;
+        border-radius: 15px;
     }
     
     .wish-icon {
+        font-size: 2.2em;
         margin-right: 0;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
+    }
+    
+    .wish-title {
+        font-size: 1.25em;
+        margin-bottom: 12px;
+    }
+    
+    .wish-text {
+        font-size: 0.9em;
+        line-height: 1.6;
     }
     
     .love-circle {
-        width: 150px;
-        height: 150px;
+        width: 140px;
+        height: 140px;
+        margin: 15px auto;
+    }
+    
+    .love-center {
+        font-size: 0.75em;
+        padding: 10px;
     }
     
     .age-display, .year-celebration {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .big-number {
+        font-size: 2.2em;
+        margin: 8px;
     }
     
     .floating-stars, .golden-coins {
-        gap: 10px;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .star, .coin {
+        font-size: 1.3em;
+    }
+    
+    .health-visual, .energy-visual {
+        height: 90px;
+        margin: 15px 0;
+    }
+    
+    .closing-message {
+        font-size: 0.95em;
+        padding: 18px;
+        margin-top: 25px;
+    }
+    
+    .love-note {
+        font-size: 0.9em;
+        padding: 15px;
+        margin-top: 18px;
+    }
+    
+    .cute-footer {
+        padding: 18px;
+        margin-top: 25px;
+    }
+    
+    .birthday-cake-animation {
+        font-size: 1.8em;
+    }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    .envelope-container {
+        width: 90vw;
+        max-width: 280px;
+        height: 250px;
+        margin: 15px auto;
+    }
+    
+    .envelope-flap {
+        height: 50px;
+        padding-top: 10px;
+    }
+    
+    .envelope-front {
+        padding: 20px 15px;
+        gap: 6px;
+    }
+    
+    .envelope-stamp {
+        top: 60px;
+        right: 10px;
+        width: 30px;
+        height: 24px;
+        font-size: 0.9em;
+    }
+    
+    .envelope-address {
+        top: 60px;
+        left: 15px;
+        right: 50px;
+        font-size: 0.65em;
+    }
+    
+    .cute-icon {
+        font-size: 1.4em;
+        margin: 4px 0;
+    }
+    
+    .hint-text {
+        font-size: 0.7em;
+        margin: 6px 0;
+        max-width: 180px;
+    }
+    
+    .open-button {
+        padding: 7px 15px;
+        font-size: 0.8em;
+        min-width: 65px;
+    }
+    
+    .birthday-card {
+        padding: 15px 12px;
+        max-width: 98vw;
+    }
+    
+    .main-title {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+    
+    .birthday-icon {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .wish-item {
+        padding: 15px 12px;
+        margin: 10px 0;
+        border-radius: 12px;
+    }
+    
+    .wish-icon {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .wish-title {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    
+    .wish-text {
+        font-size: 0.85em;
+        line-height: 1.5;
+    }
+    
+    .love-circle {
+        width: 110px;
+        height: 110px;
+        margin: 12px auto;
+    }
+    
+    .love-center {
+        font-size: 0.65em;
+        padding: 8px;
+    }
+    
+    .big-number {
+        font-size: 1.9em;
+        margin: 6px;
+    }
+    
+    .celebration-text {
+        font-size: 1.8em;
+    }
+    
+    .star, .coin {
+        font-size: 1.1em;
+    }
+    
+    .health-visual, .energy-visual {
+        height: 70px;
+        margin: 12px 0;
+    }
+}
+
+/* Landscape orientation fixes for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding-top: 20px;
+    }
+    
+    .envelope-container {
+        margin: 10px auto;
+    }
+    
+    .birthday-card {
+        max-height: 95vh;
+        top: 50%;
     }
 }
